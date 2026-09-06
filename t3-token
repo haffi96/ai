@@ -1,28 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-unit=${2:-customt3code.service}
-log=$HOME/.local/state/t3code.log
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 
-pairing_line() {
-  if [[ -s $log ]]; then
-    grep 'Pairing URL:' "$log" | tail -1
-  else
-    journalctl --user -u "$unit" --no-pager 2>/dev/null | grep 'Pairing URL:' | tail -1
-  fi
-}
+unit=${2:-customt3code.service}
 
 case ${1:-} in
   latest)
-    pairing_line | sed -E 's/.*#token=//'
+    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/.*#token=//'
     ;;
   url)
-    pairing_line
+    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1
     ;;
   restart)
     systemctl --user restart "$unit"
     sleep 4
-    pairing_line
+    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1
     ;;
   *)
     echo "usage: t3-token latest|url|restart [unit]" >&2
