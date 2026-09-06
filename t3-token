@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+unit=${2:-customt3code.service}
+
+case ${1:-} in
+  latest)
+    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/.*#token=//'
+    ;;
+  url)
+    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/^[^ ]+ [^ ]+ [^ ]+ [^ ]+ node\[[0-9]+\]: //'
+    ;;
+  restart)
+    systemctl --user restart "$unit"
+    sleep 4
+    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/^[^ ]+ [^ ]+ [^ ]+ [^ ]+ node\[[0-9]+\]: //'
+    ;;
+  *)
+    echo "usage: t3-token latest|url|restart [unit]" >&2
+    exit 1
+    ;;
+esac
