@@ -18,6 +18,8 @@ setup_t3code() {
   link "$REPO_DIR/customt3code.service" "$HOME/.config/systemd/user/customt3code.service"
   link "$REPO_DIR/t3-token" "$HOME/bin/t3-token"
   ensure_path
+  mkdir -p "$HOME/.local/state"
+  touch "$HOME/.local/state/t3code.log"
   systemctl --user daemon-reload
   systemctl --user enable --now customt3code.service
   echo "t3code: enabled and started"

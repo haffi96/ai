@@ -2,18 +2,27 @@
 set -euo pipefail
 
 unit=${2:-customt3code.service}
+log=$HOME/.local/state/t3code.log
+
+pairing_line() {
+  if [[ -s $log ]]; then
+    grep 'Pairing URL:' "$log" | tail -1
+  else
+    journalctl --user -u "$unit" --no-pager 2>/dev/null | grep 'Pairing URL:' | tail -1
+  fi
+}
 
 case ${1:-} in
   latest)
-    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/.*#token=//'
+    pairing_line | sed -E 's/.*#token=//'
     ;;
   url)
-    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/^[^ ]+ [^ ]+ [^ ]+ [^ ]+ node\[[0-9]+\]: //'
+    pairing_line
     ;;
   restart)
     systemctl --user restart "$unit"
     sleep 4
-    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/^[^ ]+ [^ ]+ [^ ]+ [^ ]+ node\[[0-9]+\]: //'
+    pairing_line
     ;;
   *)
     echo "usage: t3-token latest|url|restart [unit]" >&2

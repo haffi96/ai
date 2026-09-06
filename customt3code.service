@@ -6,6 +6,8 @@ After=network.target
 Type=simple
 WorkingDirectory=%h
 ExecStart=%h/code/ai/run-t3code
+StandardOutput=append:%h/.local/state/t3code.log
+StandardError=append:%h/.local/state/t3code.log
 Restart=on-failure
 RestartSec=5
 
