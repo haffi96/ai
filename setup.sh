@@ -17,9 +17,20 @@ link() {
 setup_t3code() {
   link "$REPO_DIR/customt3code.service" "$HOME/.config/systemd/user/customt3code.service"
   link "$REPO_DIR/t3-token" "$HOME/bin/t3-token"
+  ensure_path
   systemctl --user daemon-reload
   systemctl --user enable --now customt3code.service
   echo "t3code: enabled and started"
+}
+
+ensure_path() {
+  local line='export PATH="$HOME/bin:$PATH"'
+  for rc in "$HOME/.zshrc" "$HOME/.zprofile" "$HOME/.profile"; do
+    if [[ -f $rc ]] && ! grep -qs 'HOME/bin' "$rc"; then
+      printf '\n%s\n' "$line" >> "$rc"
+      echo "added ~/bin to PATH in $rc"
+    fi
+  done
 }
 
 setup_opencode() {
