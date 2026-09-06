@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bin="$HOME/.opencode/bin/opencode"
+[[ -x $bin ]] || bin=$(command -v opencode || true)
+[[ -n ${bin:-} ]] || { echo "run-opencode: opencode not found" >&2; exit 1; }
+
+exec "$bin" web --port "${OPENCODE_PORT:-4096}" --hostname "${OPENCODE_HOSTNAME:-0.0.0.0}"

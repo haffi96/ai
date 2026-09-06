@@ -30,12 +30,14 @@ setup_opencode() {
 }
 
 setup_skills() {
-  mkdir -p "$HOME/.opencode/skills"
-  for f in "$REPO_DIR/skills"/*; do
-    [[ -e "$f" ]] || continue
-    link "$f" "$HOME/.opencode/skills/$(basename "$f")"
+  for dir in "$HOME/.opencode/skills" "$HOME/.agents/skills" "$HOME/.claude/skills"; do
+    mkdir -p "$dir"
+    for f in "$REPO_DIR/skills"/*; do
+      [[ -e "$f" ]] || continue
+      link "$f" "$dir/$(basename "$f")"
+    done
   done
-  echo "skills: linked from $REPO_DIR/skills"
+  echo "skills: linked from $REPO_DIR/skills into ~/.opencode, ~/.agents, ~/.claude"
 }
 
 if [[ $# -eq 0 ]]; then

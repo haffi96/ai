@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve node binary: PATH first, then any nvm install
+node=$(command -v node || true)
+if [[ -z $node ]]; then
+  for n in "$HOME"/.nvm/versions/node/*/bin/node "$HOME"/.volta/bin/node /usr/local/bin/node /usr/bin/node; do
+    [[ -x $n ]] && node=$n && break
+  done
+fi
+[[ -n ${node:-} ]] || { echo "run-t3code: node not found" >&2; exit 1; }
+nodedir=$(cd "$(dirname "$node")/.." && pwd)
+
+# Resolve npx
+npx=$(command -v npx || true)
+if [[ -z $npx ]]; then
+  if [[ -x $nodedir/bin/npx ]]; then
+    npx=$nodedir/bin/npx
+  elif [[ -f $nodedir/lib/node_modules/npm/bin/npx-cli.js ]]; then
+    npx="$node $nodedir/lib/node_modules/npm/bin/npx-cli.js"
+  else
+    echo "run-t3code: npx not found" >&2
+    exit 1
+  fi
+fi
+
+export PATH="$nodedir/bin:$PATH"
+
+args=(serve)
+host=${T3CODE_HOST:-}
+if [[ -z $host ]] && command -v tailscale >/dev/null 2>&1; then
+  host=$(tailscale ip -4 2>/dev/null || true)
+fi
+[[ -n $host ]] && args+=(--host "$host")
+
+# shellcheck disable=SC2086
+exec $npx t3@nightly "${args[@]}"

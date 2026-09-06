@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h
-ExecStart=/home/haff/.opencode/bin/opencode web --port 4096 --hostname 0.0.0.0
+ExecStart=%h/code/ai/run-opencode
 Restart=on-failure
 RestartSec=5
 

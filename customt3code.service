@@ -5,8 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h
-Environment=PATH=/home/haff/.nvm/versions/node/v24.15.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ExecStart=/home/haff/.nvm/versions/node/v24.15.0/bin/node /home/haff/.nvm/versions/node/v24.15.0/lib/node_modules/npm/bin/npx-cli.js t3@nightly serve --host 100.75.110.61
+ExecStart=%h/code/ai/run-t3code
 Restart=on-failure
 RestartSec=5
 
