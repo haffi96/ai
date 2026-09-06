@@ -5,17 +5,22 @@ export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
 
 unit=${2:-customt3code.service}
 
+pairing_line() {
+  journalctl --user -u "$unit" --no-pager 2>/dev/null | grep 'Pairing URL:' | tail -1 ||
+    journalctl _SYSTEMD_USER_UNIT="$unit" --no-pager 2>/dev/null | grep 'Pairing URL:' | tail -1
+}
+
 case ${1:-} in
   latest)
-    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1 | sed -E 's/.*#token=//'
+    pairing_line | sed -E 's/.*#token=//'
     ;;
   url)
-    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1
+    pairing_line
     ;;
   restart)
     systemctl --user restart "$unit"
     sleep 4
-    journalctl --user -u "$unit" --no-pager | grep 'Pairing URL:' | tail -1
+    pairing_line
     ;;
   *)
     echo "usage: t3-token latest|url|restart [unit]" >&2
