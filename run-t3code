@@ -34,4 +34,4 @@ fi
 [[ -n $host ]] && args+=(--host "$host")
 
 # shellcheck disable=SC2086
-exec $npx t3@nightly "${args[@]}"
+exec $npx -y t3@nightly "${args[@]}"
