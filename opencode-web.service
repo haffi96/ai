@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h
+EnvironmentFile=-%h/.config/ai-services.env
 ExecStart=%h/code/ai/run-opencode
 Restart=on-failure
 RestartSec=5
